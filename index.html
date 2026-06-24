@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Realtor Lead Master — 1PM Collective</title>
+<style>
+:root{color-scheme:dark;--bg:#0f1216;--panel:#171c22;--panel2:#1d242c;--line:#2a333d;--txt:#e7edf3;--mut:#8b97a5;--acc:#3ea6ff;--acc2:#36d399;--chip:#222c36;--danger:#f87272}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+header{display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+header h1{font-size:16px;margin:0;font-weight:700;letter-spacing:.2px}
+.count{color:var(--mut);font-size:12px}.count b{color:var(--acc2)}
+.spacer{flex:1}
+.layout{display:flex;height:calc(100vh - 49px)}
+.side{width:268px;flex:0 0 268px;background:var(--panel);border-right:1px solid var(--line);overflow:auto;padding:14px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.toolbar{display:flex;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel2);flex-wrap:wrap}
+input,select,button{font:inherit;color:var(--txt);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 10px;outline:none}
+input:focus,select:focus{border-color:var(--acc)}
+button{background:var(--chip);cursor:pointer}button:hover{border-color:var(--acc)}
+button.primary{background:var(--acc);color:#04121f;border-color:var(--acc);font-weight:600}
+button.ghost{background:transparent}
+.search{flex:1;min-width:200px}
+.sec{margin-bottom:16px}.sec h3{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin:0 0 8px}
+.chk{display:flex;align-items:center;gap:7px;padding:3px 0;cursor:pointer;font-size:13px}.chk input{accent-color:var(--acc)}
+.tablewrap{flex:1;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+thead th{position:sticky;top:0;background:var(--panel2);text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);font-weight:600;color:var(--mut);cursor:pointer;white-space:nowrap;user-select:none}
+thead th:hover{color:var(--txt)}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr{cursor:pointer}tbody tr:hover{background:var(--panel2)}
+.muted{color:var(--mut)}
+.src{font-size:10px;padding:1px 6px;border-radius:4px;background:#1c2f45;color:#9cd0ff;margin-right:3px;white-space:nowrap}
+.tag{font-size:10px;padding:1px 6px;border-radius:4px;background:#2a2333;color:#d9b8ff;margin:1px 2px 1px 0;display:inline-block}
+.pager{display:flex;align-items:center;gap:10px;padding:9px 14px;border-top:1px solid var(--line);background:var(--panel2)}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:520px;max-width:92vw;background:var(--panel);border-left:1px solid var(--line);box-shadow:-12px 0 40px rgba(0,0,0,.5);transform:translateX(100%);transition:transform .18s ease;z-index:50;display:flex;flex-direction:column}
+.drawer.open{transform:translateX(0)}
+.dhead{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.dhead .nm{font-size:18px;font-weight:700}
+.dbody{overflow:auto;padding:16px}
+.field{margin-bottom:13px}.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin-bottom:3px}.field .val{font-size:14px;word-break:break-word}
+.srcCard{border:1px solid var(--line);border-radius:10px;padding:11px;margin-bottom:10px;background:var(--panel2)}
+.srcCard .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}.srcCard .acc{font-weight:600;color:#9cd0ff}
+.kv{font-size:12px;color:var(--mut);margin:2px 0}.kv b{color:var(--txt);font-weight:500}
+.navbtns{display:flex;gap:8px}.iconbtn{padding:6px 10px}
+.smartlist{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:13px}.smartlist:hover{background:var(--panel2)}
+.smartlist .x{margin-left:auto;color:var(--mut);font-size:14px;padding:0 4px}.smartlist .x:hover{color:var(--danger)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);padding:10px 16px;border-radius:10px;z-index:80;opacity:0;transition:opacity .2s;pointer-events:none}.toast.show{opacity:1}
+.empty{padding:40px;text-align:center;color:var(--mut)}
+.loader{display:inline-block;width:13px;height:13px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px}@keyframes spin{to{transform:rotate(360deg)}}
+#gate{position:fixed;inset:0;background:radial-gradient(1200px 600px at 50% -10%,#1b2430,#0d1014);z-index:100;display:flex;align-items:center;justify-content:center}
+.card{width:360px;max-width:92vw;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.card h2{margin:0 0 4px;font-size:20px}.card p{margin:0 0 18px;color:var(--mut);font-size:13px}
+.card label{font-size:12px;color:var(--mut);display:block;margin:10px 0 4px}
+.card input{width:100%}
+.card button{width:100%;margin-top:18px;padding:10px}
+.err{color:var(--danger);font-size:12px;margin-top:10px;min-height:14px}
+.who{font-size:12px;color:var(--mut)}
+</style>
+</head>
+<body>
+<div id="gate">
+  <div class="card">
+    <h2>📇 Realtor Lead Master</h2>
+    <p>1PM Collective · sign in to access 2.57M consolidated leads</p>
+    <label>Email</label><input id="gEmail" type="email" autocomplete="username" placeholder="you@1pm.ai"/>
+    <label>Password</label><input id="gPass" type="password" autocomplete="current-password" placeholder="••••••••"/>
+    <button class="primary" id="gBtn">Sign in</button>
+    <div class="err" id="gErr"></div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+<header>
+  <h1>📇 Realtor Lead Master</h1>
+  <span class="count" id="count">…</span>
+  <div class="spacer"></div>
+  <span class="who" id="who"></span>
+  <button class="ghost" id="logout" style="font-size:12px;padding:5px 10px">Sign out</button>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="sec"><h3>Saved Smart Lists</h3>
+      <div id="smartlists"><span class="muted" style="font-size:12px">none yet</span></div>
+      <div style="margin-top:8px;display:flex;gap:6px">
+        <input id="slname" placeholder="Name this view…" style="flex:1;font-size:12px"/>
+        <button class="primary" id="saveSL">Save</button>
+      </div>
+    </div>
+    <div class="sec"><h3>Source Subaccount</h3><div id="sources"></div></div>
+    <div class="sec"><h3>Filters</h3>
+      <label class="chk"><input type="checkbox" id="fHasPhone"/> Has phone number</label>
+      <label class="chk"><input type="checkbox" id="fHasEmail"/> Has email</label>
+      <label class="chk"><input type="checkbox" id="fMulti"/> In 2+ subaccounts</label>
+      <div style="margin-top:8px"><label class="chk" style="display:block;margin-bottom:4px">Tag contains</label>
+        <input id="fTag" placeholder="e.g. exp realty leads" style="width:100%;font-size:12px"/></div>
+    </div>
+    <div class="sec"><button class="ghost" id="reset" style="width:100%">Reset all filters</button></div>
+  </aside>
+  <div class="main">
+    <div class="toolbar">
+      <input class="search" id="q" placeholder="🔎 Search name, phone, email, tag, business…"/>
+      <select id="sort">
+        <option value="date_added.desc.nullslast">Newest added</option>
+        <option value="date_added.asc.nullslast">Oldest added</option>
+        <option value="last_activity.desc.nullslast">Recent activity</option>
+        <option value="record_count.desc">Most subaccounts</option>
+        <option value="display_name.asc">Name A→Z</option>
+        <option value="display_name.desc">Name Z→A</option>
+      </select>
+      <button id="export">⬇ Export CSV</button>
+    </div>
+    <div class="tablewrap">
+      <table><thead><tr>
+        <th data-s="display_name.asc">Name</th><th data-s="phone.asc">Phone</th><th>Email</th>
+        <th>Tags</th><th>Sources</th><th data-s="date_added.desc.nullslast">Added</th>
+      </tr></thead><tbody id="rows"></tbody></table>
+      <div class="empty" id="empty" style="display:none">No matching contacts.</div>
+    </div>
+    <div class="pager">
+      <button id="prev">‹ Prev</button><span id="pageinfo" class="muted"></span><button id="next">Next ›</button>
+      <div class="spacer"></div><span class="muted" id="status"></span>
+    </div>
+  </div>
+</div>
+<div class="drawer" id="drawer">
+  <div class="dhead">
+    <div class="navbtns"><button class="iconbtn" id="dprev" title="Previous (←)">‹</button><button class="iconbtn" id="dnext" title="Next (→)">›</button></div>
+    <div class="nm" id="dname" style="flex:1">—</div><button class="iconbtn" id="dclose">✕</button>
+  </div>
+  <div class="dbody" id="dbody"></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SB="https://hufbrhjuatlkfuymkuoi.supabase.co";
+const ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1ZmJyaGp1YXRsa2Z1eW1rdW9pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNTU0NjAsImV4cCI6MjA5NzgzMTQ2MH0.l0CGAI9UhKYi7hl5R77rzA6Q7tBVYgQu1x48rQlcrsA";
+const PAGE=50;
+const SUBS=[["instagram_leads","Instagram Leads"],["chatgpt_bookings","2023 ChatGPT Agent Attraction Bookings"],["costar_database","Costar Database"],["onepropertymarket","1PropertyMarket Realtor Lead Bookings"],["zillow_account","Zillow Account"],["realtor_com","Realtor.com Lead Bookings"],["exp_realtors","Exp Realtors Lead Bookings"],["loopnet","Loopnet Realtor Lead Bookings"],["onepm_ai","1PM AI"]];
+const $=s=>document.querySelector(s);
+let state={q:"",sort:"date_added.desc.nullslast",sources:[],hasPhone:false,hasEmail:false,multi:false,tag:"",page:0};
+let rows=[], total=0, grand=0, drawerIdx=-1, session=null;
+
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1900);}
+function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function enc(s){return encodeURIComponent(s);}
+
+/* ---- Auth ---- */
+function loadSession(){try{session=JSON.parse(localStorage.getItem("lm_session")||"null");}catch(e){session=null;}}
+function saveSession(s){session=s;localStorage.setItem("lm_session",JSON.stringify(s));}
+function clearSession(){session=null;localStorage.removeItem("lm_session");}
+async function doLogin(email,pw){
+  const r=await fetch(SB+"/auth/v1/token?grant_type=password",{method:"POST",headers:{apikey:ANON,"Content-Type":"application/json"},body:JSON.stringify({email,password:pw})});
+  const d=await r.json();
+  if(!d.access_token) throw new Error(d.error_description||d.msg||d.error||"Sign-in failed");
+  saveSession({access_token:d.access_token,refresh_token:d.refresh_token,expires_at:Date.now()+(d.expires_in||3600)*1000,email:(d.user||{}).email||email});
+}
+async function refresh(){
+  if(!session||!session.refresh_token) return false;
+  const r=await fetch(SB+"/auth/v1/token?grant_type=refresh_token",{method:"POST",headers:{apikey:ANON,"Content-Type":"application/json"},body:JSON.stringify({refresh_token:session.refresh_token})});
+  const d=await r.json();
+  if(!d.access_token){clearSession();return false;}
+  saveSession({...session,access_token:d.access_token,refresh_token:d.refresh_token,expires_at:Date.now()+(d.expires_in||3600)*1000});
+  return true;
+}
+async function api(path,opts={}){
+  if(session && session.expires_at-Date.now()<60000) await refresh();
+  const hdr={apikey:ANON,Authorization:"Bearer "+(session?session.access_token:ANON),...(opts.headers||{})};
+  let r=await fetch(SB+path,{...opts,headers:hdr});
+  if(r.status===401){ if(await refresh()){ r=await fetch(SB+path,{...opts,headers:{...hdr,Authorization:"Bearer "+session.access_token}}); } else { gate(); throw new Error("Session expired"); } }
+  return r;
+}
+function gate(){$("#gate").style.display="flex";$("#app").style.display="none";}
+function ungate(){$("#gate").style.display="none";$("#app").style.display="block";$("#who").textContent=session.email||"";}
+
+/* ---- Query ---- */
+function buildFilter(){
+  const p=[];
+  if(state.q.trim()) p.push("search_text=ilike."+enc("*"+state.q.trim().replace(/[%,()]/g," ")+"*"));
+  if(state.hasPhone) p.push("phone=not.is.null");
+  if(state.hasEmail) p.push("emails=neq."+enc("{}"));
+  if(state.multi) p.push("record_count=gte.2");
+  if(state.tag.trim()) p.push("tags=cs."+enc("{"+state.tag.trim()+"}"));
+  if(state.sources.length){
+    if(state.sources.length===1) p.push("source_slugs=cs."+enc("{"+state.sources[0]+"}"));
+    else p.push("or=("+state.sources.map(s=>"source_slugs.cs."+enc("{"+s+"}")).join(",")+")");
+  }
+  return p.join("&");
+}
+async function fetchRows(){
+  $("#status").innerHTML='<span class="loader"></span> loading…';
+  const sel="select=dedup_key,phone,display_name,emails,tags,source_slugs,record_count,date_added,last_activity";
+  const f=buildFilter();
+  const r=await api(`/rest/v1/lm_contacts?${sel}${f?"&"+f:""}&order=${state.sort}&limit=${PAGE}&offset=${state.page*PAGE}`,{headers:{Prefer:"count=estimated"}});
+  rows=await r.json();
+  const cr=r.headers.get("content-range")||""; total=parseInt((cr.split("/")[1]||"0"))||rows.length;
+  render(); $("#status").textContent="";
+}
+function render(){
+  const tb=$("#rows");tb.innerHTML="";
+  $("#empty").style.display=rows.length?"none":"block";
+  rows.forEach((c,i)=>{
+    const tags=(c.tags||[]).slice(0,3).map(t=>`<span class="tag">${esc(t)}</span>`).join("")+((c.tags||[]).length>3?`<span class="muted">+${c.tags.length-3}</span>`:"");
+    const srcs=(c.source_slugs||[]).map(s=>`<span class="src">${esc(short(s))}</span>`).join("");
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${esc(c.display_name||"—")}</b>${c.record_count>1?` <span class="muted">×${c.record_count}</span>`:""}</td>
+      <td>${esc(c.phone||"")||'<span class="muted">—</span>'}</td>
+      <td>${esc((c.emails||[])[0]||"")||'<span class="muted">—</span>'}</td>
+      <td>${tags||'<span class="muted">—</span>'}</td><td>${srcs}</td>
+      <td class="muted">${fmtDate(c.date_added)}</td>`;
+    tr.onclick=()=>openDrawer(i); tb.appendChild(tr);
+  });
+  const start=total?state.page*PAGE+1:0, end=Math.min(total,(state.page+1)*PAGE);
+  const anyFilter=buildFilter()!=="";
+  $("#pageinfo").textContent=`${start.toLocaleString()}–${end.toLocaleString()} of ${anyFilter?"~":""}${total.toLocaleString()}`;
+  $("#prev").disabled=state.page<=0; $("#next").disabled=(state.page+1)*PAGE>=total;
+  $("#count").innerHTML=`<b>${(grand||total).toLocaleString()}</b> total leads`;
+}
+function short(slug){const m={instagram_leads:"Instagram",chatgpt_bookings:"ChatGPT",costar_database:"Costar",onepropertymarket:"1PropMkt",zillow_account:"Zillow",realtor_com:"Realtor.com",exp_realtors:"eXp",loopnet:"Loopnet",onepm_ai:"1PM AI"};return m[slug]||slug;}
+function fmtDate(d){if(!d)return"—";const x=new Date(d);return isNaN(x)?"—":x.toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});}
+
+async function openDrawer(i){
+  drawerIdx=i;const c=rows[i];
+  $("#drawer").classList.add("open");$("#dname").textContent=c.display_name||c.phone||"Contact";
+  $("#dbody").innerHTML='<span class="loader"></span> loading full record…';
+  const r=await api(`/rest/v1/lm_contacts?select=*&dedup_key=eq.${enc(c.dedup_key)}&limit=1`);
+  const full=(await r.json())[0]||c; renderDrawer(full);
+}
+function renderDrawer(c){
+  const f=[];
+  const arr=(label,a)=>{a=(a||[]).filter(Boolean);if(a.length)f.push(`<div class="field"><label>${label}</label><div class="val">${a.map(esc).join(", ")}</div></div>`);};
+  const one=(label,v)=>{if(v)f.push(`<div class="field"><label>${label}</label><div class="val">${esc(v)}</div></div>`);};
+  one("Phone (dedup key)",c.phone); arr("All names",c.names); arr("Emails",c.emails); arr("Businesses",c.businesses);
+  if((c.tags||[]).length)f.push(`<div class="field"><label>Tags (${c.tags.length})</label><div class="val">${c.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div></div>`);
+  f.push(`<div class="field"><label>Appears in</label><div class="val">${(c.source_slugs||[]).map(s=>`<span class="src">${esc(short(s))}</span>`).join("")} &nbsp;<span class="muted">(${c.record_count} record${c.record_count>1?"s":""})</span></div></div>`);
+  f.push(`<div class="field"><label>First added · Last activity</label><div class="val">${fmtDate(c.date_added)} &middot; ${c.last_activity?fmtDate(c.last_activity):"—"}</div></div>`);
+  f.push(`<div class="field"><label>Source records & GHL links</label></div>`);
+  (c.sources||[]).forEach(s=>{
+    const nm=((s.first||"")+" "+(s.last||"")).trim();
+    f.push(`<div class="srcCard"><div class="top"><span class="acc">${esc(s.account||short(s.slug))}</span>${s.url?`<a href="${esc(s.url)}" target="_blank" rel="noopener">Open in GHL ↗</a>`:""}</div>
+      ${nm?`<div class="kv">Name: <b>${esc(nm)}</b></div>`:""}
+      ${s.email?`<div class="kv">Email: <b>${esc(s.email)}</b></div>`:""}
+      ${s.phone?`<div class="kv">Phone: <b>${esc(s.phone)}</b></div>`:""}
+      <div class="kv">Created: <b>${fmtDate(s.created)}</b></div>
+      ${(s.tags||[]).length?`<div class="kv">Tags: ${s.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`:""}
+      <div class="kv" style="opacity:.6">contact id: ${esc(s.contact_id||"")}</div></div>`);
+  });
+  $("#dbody").innerHTML=f.join("");
+  $("#dprev").disabled=drawerIdx<=0 && state.page<=0;
+  $("#dnext").disabled=drawerIdx>=rows.length-1 && (state.page+1)*PAGE>=total;
+}
+async function navDrawer(dir){
+  let i=drawerIdx+dir;
+  if(i<0){ if(state.page>0){await go(state.page-1);i=rows.length-1;} else return; }
+  else if(i>=rows.length){ if((state.page+1)*PAGE<total){await go(state.page+1);i=0;} else return; }
+  openDrawer(i);
+}
+function closeDrawer(){$("#drawer").classList.remove("open");drawerIdx=-1;}
+async function go(p){state.page=p;await fetchRows();}
+let qto; function onChange(reset=true){if(reset)state.page=0;clearTimeout(qto);qto=setTimeout(fetchRows,180);}
+
+async function loadSmartLists(){
+  const r=await api(`/rest/v1/lm_smart_lists?select=*&order=created_at.desc`);
+  const sl=await r.json(); const el=$("#smartlists");
+  if(!sl.length){el.innerHTML='<span class="muted" style="font-size:12px">none yet</span>';return;}
+  el.innerHTML="";
+  sl.forEach(s=>{
+    const d=document.createElement("div");d.className="smartlist";
+    d.innerHTML=`<span>📌 ${esc(s.name)}</span><span class="x" title="delete">✕</span>`;
+    d.firstChild.onclick=()=>applyDef(s.definition);
+    d.querySelector(".x").onclick=async(e)=>{e.stopPropagation();await api(`/rest/v1/lm_smart_lists?id=eq.${s.id}`,{method:"DELETE"});loadSmartLists();toast("Deleted “"+s.name+"”");};
+    el.appendChild(d);
+  });
+}
+function applyDef(d){
+  state={...state,...d,page:0};
+  $("#q").value=state.q||"";$("#sort").value=state.sort;$("#fTag").value=state.tag||"";
+  $("#fHasPhone").checked=!!state.hasPhone;$("#fHasEmail").checked=!!state.hasEmail;$("#fMulti").checked=!!state.multi;
+  document.querySelectorAll(".srcchk").forEach(c=>c.checked=state.sources.includes(c.value));
+  fetchRows();toast("Smart list applied");
+}
+async function saveSmartList(){
+  const name=$("#slname").value.trim();if(!name){toast("Name your view first");return;}
+  const def={q:state.q,sort:state.sort,sources:state.sources,hasPhone:state.hasPhone,hasEmail:state.hasEmail,multi:state.multi,tag:state.tag};
+  await api(`/rest/v1/lm_smart_lists`,{method:"POST",headers:{"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify({name,definition:def})});
+  $("#slname").value="";loadSmartLists();toast("Saved “"+name+"”");
+}
+async function exportCSV(){
+  toast("Building export…");
+  const sel="select=dedup_key,phone,display_name,names,emails,businesses,tags,source_slugs,record_count,date_added,last_activity";
+  const f=buildFilter();let out=[],off=0,CAP=50000,step=1000;
+  while(off<CAP){
+    const r=await api(`/rest/v1/lm_contacts?${sel}${f?"&"+f:""}&order=${state.sort}&limit=${step}&offset=${off}`);
+    const b=await r.json();if(!b.length)break;out=out.concat(b);off+=step;if(b.length<step)break;
+  }
+  const cols=["phone","display_name","names","emails","businesses","tags","source_slugs","record_count","date_added","last_activity","dedup_key"];
+  const csv=[cols.join(",")].concat(out.map(r=>cols.map(c=>{let v=r[c];if(Array.isArray(v))v=v.join("; ");if(v==null)v="";v=String(v).replace(/"/g,'""');return /[",\n]/.test(v)?`"${v}"`:v;}).join(","))).join("\n");
+  const blob=new Blob([csv],{type:"text/csv"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="realtor_leads_export.csv";a.click();
+  toast(`Exported ${out.length.toLocaleString()} rows`);
+}
+function buildSources(){
+  const el=$("#sources");
+  SUBS.forEach(([slug,name])=>{
+    const l=document.createElement("label");l.className="chk";
+    l.innerHTML=`<input type="checkbox" class="srcchk" value="${slug}"/> ${esc(name)}`;
+    l.querySelector("input").onchange=(e)=>{const v=e.target.value;if(e.target.checked)state.sources.push(v);else state.sources=state.sources.filter(x=>x!==v);onChange();};
+    el.appendChild(l);
+  });
+}
+async function initApp(){
+  ungate(); buildSources();
+  try{ const r=await api(`/rest/v1/lm_meta?select=v&k=eq.stats`); const m=await r.json(); grand=(m[0]&&m[0].v&&m[0].v.total)||0; }catch(e){}
+  loadSmartLists(); fetchRows();
+}
+/* wire */
+$("#gBtn").onclick=async()=>{
+  $("#gErr").textContent="";const b=$("#gBtn");b.disabled=true;b.textContent="Signing in…";
+  try{ await doLogin($("#gEmail").value.trim(),$("#gPass").value); initApp(); }
+  catch(e){ $("#gErr").textContent=e.message; }
+  b.disabled=false;b.textContent="Sign in";
+};
+$("#gPass").addEventListener("keydown",e=>{if(e.key==="Enter")$("#gBtn").click();});
+$("#logout").onclick=()=>{clearSession();location.reload();};
+$("#q").oninput=e=>{state.q=e.target.value;onChange();};
+$("#sort").onchange=e=>{state.sort=e.target.value;onChange();};
+$("#fHasPhone").onchange=e=>{state.hasPhone=e.target.checked;onChange();};
+$("#fHasEmail").onchange=e=>{state.hasEmail=e.target.checked;onChange();};
+$("#fMulti").onchange=e=>{state.multi=e.target.checked;onChange();};
+$("#fTag").oninput=e=>{state.tag=e.target.value;onChange();};
+$("#reset").onclick=()=>{state={q:"",sort:"date_added.desc.nullslast",sources:[],hasPhone:false,hasEmail:false,multi:false,tag:"",page:0};$("#q").value="";$("#sort").value=state.sort;$("#fTag").value="";["fHasPhone","fHasEmail","fMulti"].forEach(id=>$("#"+id).checked=false);document.querySelectorAll(".srcchk").forEach(c=>c.checked=false);fetchRows();};
+$("#prev").onclick=()=>go(state.page-1);$("#next").onclick=()=>go(state.page+1);
+$("#export").onclick=exportCSV;$("#saveSL").onclick=saveSmartList;
+$("#dclose").onclick=closeDrawer;$("#dprev").onclick=()=>navDrawer(-1);$("#dnext").onclick=()=>navDrawer(1);
+document.querySelectorAll("thead th[data-s]").forEach(th=>th.onclick=()=>{state.sort=th.dataset.s;$("#sort").value=th.dataset.s;onChange();});
+document.addEventListener("keydown",e=>{if(!$("#drawer").classList.contains("open"))return;if(e.key==="Escape")closeDrawer();if(e.key==="ArrowLeft")navDrawer(-1);if(e.key==="ArrowRight")navDrawer(1);});
+/* boot */
+loadSession();
+if(session && session.access_token){ refresh().then(ok=>{ if(ok||session) initApp(); else gate(); }); } else { gate(); }
+</script>
+</body>
+</html>
